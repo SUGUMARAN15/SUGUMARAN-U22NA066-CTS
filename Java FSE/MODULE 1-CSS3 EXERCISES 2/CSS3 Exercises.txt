@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Community Event Portal</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+
+    <style>
+        /* General Reset (Task 3: Universal Selector) */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+        }
+
+        /* Body and General Text Styling (Task 1: Internal CSS, Task 4: Background, Task 5: Typography) */
+        body {
+            font-family: 'Roboto', sans-serif; /* Use Roboto, fallback to sans-serif */
+            font-size: 16px;
+            line-height: 1.6;
+            color: #333; /* Default text color (Task 4: HEX) */
+            background-color: #f0f0f0; /* Fallback color (Task 4: HEX) */
+            background-image: url('https://via.placeholder.com/1920x1080/E0F2F7/2196F3?text=City+Background'); /* Replace with your image, Task 4 */
+            background-size: cover; /* Cover the entire background */
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* Fix background during scroll */
+        }
+
+        /* Header Styles (Task 2) */
+        header {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+
+        /* Navigation Styles (Task 2, Task 6: List Styling) */
+        nav ul {
+            list-style-type: none; /* Remove bullets */
+            display: flex; /* Use flexbox for horizontal layout */
+            justify-content: space-around; /* Distribute items evenly */
+            padding: 0; /* Ensure no default padding from ul */
+        }
+
+        nav li {
+            padding: 5px 10px; /* Add padding to list items */
+            margin: 0 5px; /* Add margin to list items */
+        }
+
+        /* Link styles (Task 6) */
+        a:link {
+            color: #007bff; /* Default link color */
+            text-decoration: none; /* Remove underline */
+        }
+
+        a:visited {
+            color: #800080; /* Visited link color (purple) */
+        }
+
+        a:hover {
+            color: #0056b3; /* Hover color (darker blue) */
+            text-decoration: underline; /* Add underline on hover */
+        }
+
+        a:active {
+            color: #ff0000; /* Active link color (red) */
+        }
+
+        /* Main Content Area */
+        main {
+            padding: 20px;
+            max-width: 960px; /* Max width for content */
+            margin: 20px auto; /* Center content */
+            background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Element selector for all h2 headings (Task 3, Task 4: Gradient) */
+        h2 {
+            background: linear-gradient(to right, #007bff, #0056b3); /* Blue gradient */
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Grouping selector for h3 and p elements (Task 3) */
+        h3, p {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* ID selector for the welcome banner (Task 3) */
+        #welcomeBanner {
+            background-color: blue; /* Task 3 */
+            color: white;
+            padding: 25px; /* Increased padding */
+            text-align: center;
+            margin-bottom: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* Styling the H1 inside welcomeBanner (Task 5) */
+        #welcomeBanner h1 {
+            font-size: 2.5em; /* Larger font */
+            font-weight: 700; /* Bold from Roboto font */
+            text-align: center;
+            text-transform: uppercase; /* Convert text to uppercase */
+            letter-spacing: 2px; /* Add space between letters */
+            margin-bottom: 10px;
+        }
+
+        /* Inline style for special offer (Task 3) - kept for demonstration */
+        #welcomeBanner p span {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Highlight class (Task 3) */
+        .highlight {
+            color: #28a745; /* HEX color (green) */
+            background-color: rgba(255, 255, 0, 0.2); /* RGBA (yellow with 20% opacity) */
+            font-weight: bold;
+            font-style: italic; /* Task 5 */
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* Image borders (from original Task 4) */
+        .image-border {
+            border: 2px solid #ddd;
+            padding: 5px;
+            margin: 5px;
+            max-width: 150px; /* Adjust as needed */
+            height: auto;
+            display: block; /* To center images if needed */
+        }
+
+        /* Table Styling (Task 7) */
+        table {
+            width: 100%; /* Make the table take up the full width */
+            border-collapse: collapse; /* Collapse borders into a single border */
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        /* Zebra striping (Task 7) */
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Center text in cells (Task 7) */
+        td {
+            text-align: center;
+        }
+
+        /* Class selector for event containers (Task 3) - using it for images within table for now */
+        /* If you wanted a div around an image, you'd apply this to that div */
+        .eventCard {
+            border: 1px solid #ccc;
+            padding: 15px; /* Space inside the border (Task 8) */
+            margin: 10px; /* Space outside the border (Task 8) */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+            display: inline-block; /* To make them arrange nicely */
+            vertical-align: top; /* Align to top in case of different heights */
+            text-align: center;
+        }
+
+        /* General List Styles (Task 6) */
+        ul {
+            list-style-type: square; /* Change bullet style */
+            list-style-position: inside; /* Bullets inside the content box */
+            padding-left: 20px; /* Add left padding to the list */
+            margin-bottom: 10px;
+        }
+
+        ol {
+            list-style-type: decimal; /* Decimal numbers for ordered lists */
+            padding-left: 20px;
+            margin-bottom: 10px;
+        }
+
+        /* Form Styling (Original Task 5 + new styling) */
+        form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="date"],
+        form select,
+        form textarea {
+            width: calc(100% - 22px); /* Account for padding and border */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        form button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        #registrationConfirmation {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #28a745;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 4px;
+            display: none; /* Hidden by default */
+        }
+
+        /* Outline for focused form fields (Task 8) */
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: 2px solid #007bff; /* Blue outline */
+            outline-offset: 2px; /* Space between border and outline */
+        }
+
+        /* Task 6: Event Feedback Styling */
+        #feedbackSection {
+            background-color: #e6f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        #feedbackSection label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        #feedbackSection input[type="text"],
+        #feedbackSection select,
+        #feedbackSection textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #feedbackSection button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        #feedbackSection button:hover {
+            background-color: #218838;
+        }
+
+        #characterCount {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        /* Task 7: Video Styling */
+        video {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        #videoMessage {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        /* Task 8: User Preferences Styling */
+        #preferencesSection {
+            background-color: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        #preferencesSection button {
+            background-color: #ffc107;
+            color: #333;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #preferencesSection button:hover {
+            background-color: #e0a800;
+        }
+
+        /* Task 9: Geolocation Styling */
+        #geolocationSection {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #geolocationSection button {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #geolocationSection button:hover {
+            background-color: #5a6268;
+        }
+
+        #coordinates {
+            margin-top: 15px;
+            font-family: monospace;
+            color: #333;
+        }
+
+        /* Multiple Columns in Text (Task 9) */
+        .news-article {
+            column-count: 2;
+            column-gap: 30px;
+            column-rule: 1px solid gray;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fcfcfc;
+            border-radius: 5px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: 40px; /* Space from content above */
+        }
+
+        /* Responsive Web Design with Media Queries (Task 10) */
+        /* For screens smaller than 768px (tablets and phones) */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column; /* Stack navigation links vertically */
+                align-items: center; /* Center them */
+            }
+
+            nav li {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 5px;
+            }
+
+            .image-border {
+                max-width: 100px; /* Reduce image sizes */
+            }
+
+            #welcomeBanner h1 {
+                font-size: 1.8em; /* Reduce font size */
+            }
+
+            h2 {
+                font-size: 1.5em; /* Reduce font size */
+            }
+
+            .news-article {
+                column-count: 1; /* Single column on small screens */
+                column-gap: 0;
+                column-rule: none;
+            }
+
+            form, #feedbackSection, #preferencesSection, #geolocationSection {
+                margin: 10px auto; /* Adjust margins */
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#feedbackSection">Feedback</a></li>
+                <li><a href="help.html" target="_blank">Help Document</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home">
+            <div id="welcomeBanner">
+                <h1>Welcome to the Local Community Event Portal!</h1>
+                <p>Find exciting events happening in our city.</p>
+                <p>Special Offer: <span style="color: red; font-weight: bold;">Get 10% off your first event registration!</span></p>
+            </div>
+            <p>Explore our events and services. We aim to <span class="highlight">connect residents</span> and build a <span class="highlight">vibrant community</span>.</p>
+        </section>
+
+        <section id="events">
+            <h2>Upcoming Events</h2>
+            <h3>Past Event Gallery</h3>
+            <table>
+                <caption>Memories from our recent gatherings</caption>
+                <thead>
+                    <tr>
+                        <th>Event 1</th>
+                        <th>Event 2</th>
+                        <th>Event 3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="eventCard">
+                                <img src="https://via.placeholder.com/150/FF5733/FFFFFF?text=Community+Fair" alt="Community Fair" title="Annual Community Fair 2023" class="image-border">
+                                <p>A lively community fair with local vendors.</p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="eventCard">
+                                <img src="https://via.placeholder.com/150/33FF57/FFFFFF?text=Music+Festival" alt="Music Festival" title="Summer Music Festival" class="image-border">
+                                <p>Local bands rocking the stage.</p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="eventCard">
+                                <img src="https://via.placeholder.com/150/3357FF/FFFFFF?text=Sports+Day" alt="Sports Day" title="Annual Sports Day" class="image-border">
+                                <p>Fun and games for all ages at the sports day.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="eventCard">
+                                <img src="https://via.placeholder.com/150/FFFF33/000000?text=Food+Truck+Rally" alt="Food Truck Rally" title="Delicious Food Truck Rally" class="image-border">
+                                <p>A feast of flavors from various food trucks.</p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="eventCard">
+                                <img src="https://via.placeholder.com/150/8A2BE2/FFFFFF?text=Art+Exhibition" alt="Art Exhibition" title="Local Art Exhibition" class="image-border">
+                                <p>Showcasing the talent of our local artists.</p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="eventCard">
+                                <img src="https://via.placeholder.com/150/FFC0CB/000000?text=Charity+Run" alt="Charity Run" title="Annual Charity Run for a Cause" class="image-border">
+                                <p>Running for a good cause and community spirit.</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Register for an Event</h3>
+            <form id="eventRegistrationForm">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Your Full Name" required autofocus><br>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="your.email@example.com" required><br>
+
+                <label for="eventDate">Preferred Event Date:</label>
+                <input type="date" id="eventDate" name="eventDate" required><br>
+
+                <label for="eventType">Event Type:</label>
+                <select id="eventType" name="eventType" required>
+                    <option value="">--Select an Event Type--</option>
+                    <option value="community_fair">Community Fair</option>
+                    <option value="music_festival">Music Festival</option>
+                    <option value="sports_day">Sports Day</option>
+                    <option value="food_rally">Food Truck Rally</option>
+                    <option value="art_exhibition">Art Exhibition</option>
+                    <option value="charity_run">Charity Run</option>
+                </select><br>
+
+                <label for="message">Message (Optional):</label>
+                <textarea id="message" name="message" rows="4" placeholder="Any special requests or comments?"></textarea><br>
+
+                <button type="submit">Register</button>
+            </form>
+            <output id="registrationConfirmation"></output>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <p>Have questions? Reach out to us!</p>
+            <address>
+                City Council Office<br>
+                123 Main Street<br>
+                Cityville, State 12345<br>
+                Email: <a href="mailto:info@citycouncil.gov">info@citycouncil.gov</a>
+            </address>
+        </section>
+
+        <section id="feedbackSection">
+            <h2>Event Feedback</h2>
+            <form id="feedbackForm">
+                <label for="feedbackEvent">Select Event:</label>
+                <select id="feedbackEvent" name="feedbackEvent">
+                    <option value="">--Select an Event--</option>
+                    <option value="community_fair" data-fee="10">Community Fair ($10)</option>
+                    <option value="music_festival" data-fee="25">Music Festival ($25)</option>
+                    <option value="sports_day" data-fee="0">Sports Day (Free)</option>
+                </select>
+                <p id="eventFeeDisplay"></p>
+
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" placeholder="e.g., 123-456-7890">
+                <small id="phoneError" style="color: red; display: block;"></small>
+
+                <label for="feedbackTextarea">Your Feedback:</label>
+                <textarea id="feedbackTextarea" name="feedbackTextarea" rows="5" placeholder="Share your experience..."></textarea>
+                <small id="characterCount">0 characters</small>
+
+                <button type="button" id="feedbackSubmitBtn">Submit Feedback</button>
+            </form>
+            <p id="feedbackConfirmation" style="display: none; color: green;"></p>
+
+            <h3>Double-Click Image to Enlarge</h3>
+            <img src="https://via.placeholder.com/200/CCCCCC/000000?text=Click+to+Enlarge" alt="Enlarge Image" id="enlargeImage" style="cursor: pointer; border: 1px solid #ccc;">
+            <p id="enlargeMessage" style="display: none;"></p>
+        </section>
+
+        <section id="videoInviteSection">
+            <h2>Event Promotion Video</h2>
+            <video id="eventPromoVideo" controls>
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p id="videoMessage"></p>
+        </section>
+
+        <section id="preferencesSection">
+            <h2>Your Event Preferences</h2>
+            <label for="preferredEventType">Preferred Event Type:</label>
+            <select id="preferredEventType" name="preferredEventType">
+                <option value="">--Select a Preference--</option>
+                <option value="community_fair">Community Fair</option>
+                <option value="music_festival">Music Festival</option>
+                <option value="sports_day">Sports Day</option>
+                <option value="food_rally">Food Truck Rally</option>
+                <option value="art_exhibition">Art Exhibition</option>
+                <option value="charity_run">Charity Run</option>
+            </select><br>
+            <button id="savePreferences">Save Preferences</button>
+            <button id="clearPreferences">Clear Preferences</button>
+            <p id="preferenceStatus"></p>
+        </section>
+
+        <section id="geolocationSection">
+            <h2>Find Nearby Events</h2>
+            <button id="findNearbyEvents">Find Nearby Events</button>
+            <p id="coordinates"></p>
+            <p id="geolocationError" style="color: red;"></p>
+        </section>
+
+        <section id="newsSection">
+            <h2>Community Bulletin</h2>
+            <div class="news-article">
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                </p>
+                <p>
+                    Curabitur pretium tincidunt lacus, sed iaculis ipsum ultrices at. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nullam nec ex et nibh efficitur tempor. Aliquam erat volutpat. Maecenas tristique orci sit amet diam tincidunt, a finibus lectus semper. Integer tristique, nunc vitae tristique dictum, sem dolor vulputate purus, a posuere magna libero at est.
+                </p>
+                <p>
+                    Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nulla facilisi. Proin lacinia nisl nec justo tincidunt, ac accumsan ex viverra. Nam nec magna id sapien bibendum sollicitudin. Aenean et massa ac velit malesuada eleifend. Sed malesuada magna nec magna hendrerit, id posuere felis feugiat.
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Local City Council. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Task 5: Event Registration Form Submission
+        document.getElementById('eventRegistrationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const eventType = document.getElementById('eventType').value;
+            const confirmationOutput = document.getElementById('registrationConfirmation');
+
+            confirmationOutput.style.display = 'block';
+            confirmationOutput.textContent = `Thank you, ${name}! You are registered for the ${eventType.replace(/_/g, ' ')} event. A confirmation email has been sent to ${email}.`;
+
+            this.reset(); // Clear the form
+        });
+
+        // Task 6: Event Feedback with Events Handling
+
+        // onblur for phone number validation
+        document.getElementById('phoneNumber').addEventListener('blur', function() {
+            const phoneNumber = this.value;
+            const phoneError = document.getElementById('phoneError');
+            const phonePattern = /^\d{3}-\d{3}-\d{4}$/; // Simple pattern for XXX-XXX-XXXX
+
+            if (phoneNumber === "") {
+                phoneError.textContent = "";
+            } else if (!phonePattern.test(phoneNumber)) {
+                phoneError.textContent = "Please enter a valid phone number (e.g., 123-456-7890).";
+            } else {
+                phoneError.textContent = "";
+            }
+        });
+
+        // onchange for event fee display
+        document.getElementById('feedbackEvent').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const eventFeeDisplay = document.getElementById('eventFeeDisplay');
+            const fee = selectedOption.getAttribute('data-fee');
+
+            if (fee !== null && fee !== undefined) { // Check if data-fee exists
+                eventFeeDisplay.textContent = `Event Fee: $${fee}`;
+            } else {
+                eventFeeDisplay.textContent = "";
+            }
+        });
+
+        // onclick for submit button confirmation
+        document.getElementById('feedbackSubmitBtn').addEventListener('click', function() {
+            const feedbackConfirmation = document.getElementById('feedbackConfirmation');
+            feedbackConfirmation.style.display = 'block';
+            feedbackConfirmation.textContent = 'Thank you for your feedback!';
+            setTimeout(() => {
+                feedbackConfirmation.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
+            document.getElementById('feedbackForm').reset();
+            document.getElementById('characterCount').textContent = '0 characters';
+            document.getElementById('eventFeeDisplay').textContent = '';
+            document.getElementById('phoneError').textContent = ''; // Clear phone error on submit
+        });
+
+        // ondblclick to enlarge image
+        const enlargeImage = document.getElementById('enlargeImage');
+        const enlargeMessage = document.getElementById('enlargeMessage');
+        let originalSize = true;
+
+        enlargeImage.addEventListener('dblclick', function() {
+            if (originalSize) {
+                this.style.maxWidth = '400px'; // Enlarge size
+                this.style.border = '3px solid blue';
+                enlargeMessage.textContent = 'Image enlarged!';
+                enlargeMessage.style.display = 'block';
+                originalSize = false;
+            } else {
+                this.style.maxWidth = '200px'; // Restore original size
+                this.style.border = '1px solid #ccc';
+                enlargeMessage.style.display = 'none';
+                originalSize = true;
+            }
+        });
+
+        // Capture key events in feedback textarea and count characters
+        document.getElementById('feedbackTextarea').addEventListener('keyup', function() {
+            const charCount = this.value.length;
+            document.getElementById('characterCount').textContent = `${charCount} characters`;
+        });
+
+        // Task 7: Video Invite with Media Events
+
+        // oncanplay event for video
+        const eventPromoVideo = document.getElementById('eventPromoVideo');
+        const videoMessage = document.getElementById('videoMessage');
+
+        eventPromoVideo.addEventListener('canplay', function() {
+            videoMessage.textContent = "Video ready to play!";
+        });
+
+        // onbeforeunload to warn users (applied to the form for Task 5 or any form)
+        window.addEventListener('beforeunload', function(event) {
+            const nameField = document.getElementById('name');
+            const emailField = document.getElementById('email');
+
+            if (nameField && nameField.value !== '' || emailField && emailField.value !== '') {
+                const message = "You have unsaved changes in the registration form. Are you sure you want to leave?";
+                event.returnValue = message; // Standard for browsers
+                return message; // For older browsers
+            }
+        });
+
+        // Task 8: Saving User Preferences
+
+        const preferredEventType = document.getElementById('preferredEventType');
+        const savePreferencesBtn = document.getElementById('savePreferences');
+        const clearPreferencesBtn = document.getElementById('clearPreferences');
+        const preferenceStatus = document.getElementById('preferenceStatus');
+
+        // Save selected event type in localStorage
+        savePreferencesBtn.addEventListener('click', function() {
+            const selectedValue = preferredEventType.value;
+            if (selectedValue) {
+                localStorage.setItem('preferredEvent', selectedValue);
+                preferenceStatus.textContent = `Preference saved: ${selectedValue.replace(/_/g, ' ')}`;
+            } else {
+                preferenceStatus.textContent = 'Please select a preference to save.';
+            }
+        });
+
+        // On reload, retrieve and pre-select it
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedPreference = localStorage.getItem('preferredEvent');
+            if (savedPreference) {
+                preferredEventType.value = savedPreference;
+                preferenceStatus.textContent = `Loaded preference: ${savedPreference.replace(/_/g, ' ')}`;
+            }
+        });
+
+        // Add a "Clear Preferences" button that clears both localStorage and sessionStorage
+        clearPreferencesBtn.addEventListener('click', function() {
+            localStorage.clear();
+            sessionStorage.clear();
+            preferredEventType.value = ''; // Reset dropdown
+            preferenceStatus.textContent = 'All preferences cleared.';
+        });
+
+        // Task 9: Geolocation for Event Mapping
+
+        const findNearbyEventsBtn = document.getElementById('findNearbyEvents');
+        const coordinatesDisplay = document.getElementById('coordinates');
+        const geolocationError = document.getElementById('geolocationError');
+
+        findNearbyEventsBtn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        coordinatesDisplay.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
+                        geolocationError.textContent = ''; // Clear any previous errors
+                        console.log("Geolocation successful:", position); // Task 10: Console log
+                    },
+                    (error) => {
+                        let errorMessage = "Geolocation error: ";
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += "User denied the request for Geolocation.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += "Location information is unavailable.";
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage += "The request to get user location timed out.";
+                                break;
+                            case error.UNKNOWN_ERROR:
+                                errorMessage += "An unknown error occurred.";
+                                break;
+                        }
+                        geolocationError.textContent = errorMessage;
+                        coordinatesDisplay.textContent = '';
+                        console.error("Geolocation error:", error); // Task 10: Console error
+                    },
+                    options
+                );
+            } else {
+                geolocationError.textContent = "Geolocation is not supported by this browser.";
+            }
+        });
+    </script>
+</body>
+</html>
