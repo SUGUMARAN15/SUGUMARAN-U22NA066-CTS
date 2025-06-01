@@ -1,0 +1,4 @@
+Bootstrap Directory Structure:
+- css: Contains compiled CSS files for Bootstrap. Used to style the webpage.
+- js: Contains Bootstrap JavaScript plugins (e.g., modals, dropdowns).
+- icons: Contains Bootstrap Icons (if downloaded). Used for iconography.

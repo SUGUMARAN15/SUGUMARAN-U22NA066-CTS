@@ -1,0 +1,3 @@
+// Run: npm install bootstrap sass
+// Create a custom.scss file and import Bootstrap
+@import "bootstrap/scss/bootstrap";
