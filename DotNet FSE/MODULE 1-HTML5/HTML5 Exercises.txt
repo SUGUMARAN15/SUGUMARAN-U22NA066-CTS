@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Community Event Portal</title>
+    <style>
+        #welcomeBanner {
+            background-color: blue;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: green;
+        }
+
+        .image-border {
+            border: 2px solid #ddd;
+            padding: 5px;
+            margin: 5px;
+            max-width: 150px; /* Adjust as needed */
+            height: auto;
+            display: block; /* To center images if needed */
+        }
+
+        /* Task 5: Form Styling */
+        form {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="date"],
+        form select,
+        form textarea {
+            width: calc(100% - 22px); /* Account for padding and border */
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        form textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        form button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+
+        #registrationConfirmation {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #28a745;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 4px;
+            display: none; /* Hidden by default */
+        }
+
+        /* Task 6: Event Feedback Styling */
+        #feedbackSection {
+            background-color: #e6f7ff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        #feedbackSection label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        #feedbackSection input[type="text"],
+        #feedbackSection select,
+        #feedbackSection textarea {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #feedbackSection button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        #feedbackSection button:hover {
+            background-color: #218838;
+        }
+
+        #characterCount {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        /* Task 7: Video Styling */
+        video {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        #videoMessage {
+            text-align: center;
+            font-style: italic;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        /* Task 8: User Preferences Styling */
+        #preferencesSection {
+            background-color: #fff3e0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        #preferencesSection button {
+            background-color: #ffc107;
+            color: #333;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        #preferencesSection button:hover {
+            background-color: #e0a800;
+        }
+
+        /* Task 9: Geolocation Styling */
+        #geolocationSection {
+            background-color: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        #geolocationSection button {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #geolocationSection button:hover {
+            background-color: #5a6268;
+        }
+
+        #coordinates {
+            margin-top: 15px;
+            font-family: monospace;
+            color: #333;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="help.html" target="_blank">Help Document</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="home">
+            <div id="welcomeBanner">
+                <h1>Welcome to the Local Community Event Portal!</h1>
+                <p>Find exciting events happening in our city.</p>
+                <p>Special Offer: <span style="color: red; font-weight: bold;">Get 10% off your first event registration!</span></p>
+            </div>
+            <p>Explore our events and services. We aim to <span class="highlight">connect residents</span> and build a <span class="highlight">vibrant community</span>.</p>
+        </section>
+
+        <section id="events">
+            <h2>Upcoming Events</h2>
+            <h3>Past Event Gallery</h3>
+            <table>
+                <caption>Memories from our recent gatherings</caption>
+                <thead>
+                    <tr>
+                        <th>Event 1</th>
+                        <th>Event 2</th>
+                        <th>Event 3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <img src="https://via.placeholder.com/150/FF5733/FFFFFF?text=Community+Fair" alt="Community Fair" title="Annual Community Fair 2023" class="image-border">
+                            <p>A lively community fair with local vendors.</p>
+                        </td>
+                        <td>
+                            <img src="https://via.placeholder.com/150/33FF57/FFFFFF?text=Music+Festival" alt="Music Festival" title="Summer Music Festival" class="image-border">
+                            <p>Local bands rocking the stage.</p>
+                        </td>
+                        <td>
+                            <img src="https://via.placeholder.com/150/3357FF/FFFFFF?text=Sports+Day" alt="Sports Day" title="Annual Sports Day" class="image-border">
+                            <p>Fun and games for all ages at the sports day.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <img src="https://via.placeholder.com/150/FFFF33/000000?text=Food+Truck+Rally" alt="Food Truck Rally" title="Delicious Food Truck Rally" class="image-border">
+                            <p>A feast of flavors from various food trucks.</p>
+                        </td>
+                        <td>
+                            <img src="https://via.placeholder.com/150/8A2BE2/FFFFFF?text=Art+Exhibition" alt="Art Exhibition" title="Local Art Exhibition" class="image-border">
+                            <p>Showcasing the talent of our local artists.</p>
+                        </td>
+                        <td>
+                            <img src="https://via.placeholder.com/150/FFC0CB/000000?text=Charity+Run" alt="Charity Run" title="Annual Charity Run for a Cause" class="image-border">
+                            <p>Running for a good cause and community spirit.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Register for an Event</h3>
+            <form id="eventRegistrationForm">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" placeholder="Your Full Name" required autofocus><br><br>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="your.email@example.com" required><br><br>
+
+                <label for="eventDate">Preferred Event Date:</label>
+                <input type="date" id="eventDate" name="eventDate" required><br><br>
+
+                <label for="eventType">Event Type:</label>
+                <select id="eventType" name="eventType" required>
+                    <option value="">--Select an Event Type--</option>
+                    <option value="community_fair">Community Fair</option>
+                    <option value="music_festival">Music Festival</option>
+                    <option value="sports_day">Sports Day</option>
+                    <option value="food_rally">Food Truck Rally</option>
+                    <option value="art_exhibition">Art Exhibition</option>
+                    <option value="charity_run">Charity Run</option>
+                </select><br><br>
+
+                <label for="message">Message (Optional):</label>
+                <textarea id="message" name="message" rows="4" placeholder="Any special requests or comments?"></textarea><br><br>
+
+                <button type="submit">Register</button>
+            </form>
+            <output id="registrationConfirmation"></output>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <p>Have questions? Reach out to us!</p>
+            <address>
+                City Council Office<br>
+                123 Main Street<br>
+                Cityville, State 12345<br>
+                Email: <a href="mailto:info@citycouncil.gov">info@citycouncil.gov</a>
+            </address>
+        </section>
+
+        <section id="feedbackSection">
+            <h2>Event Feedback</h2>
+            <form id="feedbackForm">
+                <label for="feedbackEvent">Select Event:</label>
+                <select id="feedbackEvent" name="feedbackEvent">
+                    <option value="">--Select an Event--</option>
+                    <option value="community_fair" data-fee="10">Community Fair ($10)</option>
+                    <option value="music_festival" data-fee="25">Music Festival ($25)</option>
+                    <option value="sports_day" data-fee="0">Sports Day (Free)</option>
+                </select><br><br>
+                <p id="eventFeeDisplay"></p>
+
+                <label for="phoneNumber">Phone Number:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" placeholder="e.g., 123-456-7890"><br>
+                <small id="phoneError" style="color: red;"></small><br><br>
+
+                <label for="feedbackTextarea">Your Feedback:</label>
+                <textarea id="feedbackTextarea" name="feedbackTextarea" rows="5" placeholder="Share your experience..."></textarea><br>
+                <small id="characterCount">0 characters</small><br><br>
+
+                <button type="button" id="feedbackSubmitBtn">Submit Feedback</button>
+            </form>
+            <p id="feedbackConfirmation" style="display: none; color: green;"></p>
+
+            <h3>Double-Click Image to Enlarge</h3>
+            <img src="https://via.placeholder.com/200/CCCCCC/000000?text=Click+to+Enlarge" alt="Enlarge Image" id="enlargeImage" style="cursor: pointer; border: 1px solid #ccc;">
+            <p id="enlargeMessage" style="display: none;"></p>
+        </section>
+
+        <section id="videoInviteSection">
+            <h2>Event Promotion Video</h2>
+            <video id="eventPromoVideo" controls>
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <p id="videoMessage"></p>
+        </section>
+
+        <section id="preferencesSection">
+            <h2>Your Event Preferences</h2>
+            <label for="preferredEventType">Preferred Event Type:</label>
+            <select id="preferredEventType" name="preferredEventType">
+                <option value="">--Select a Preference--</option>
+                <option value="community_fair">Community Fair</option>
+                <option value="music_festival">Music Festival</option>
+                <option value="sports_day">Sports Day</option>
+                <option value="food_rally">Food Truck Rally</option>
+                <option value="art_exhibition">Art Exhibition</option>
+                <option value="charity_run">Charity Run</option>
+            </select><br><br>
+            <button id="savePreferences">Save Preferences</button>
+            <button id="clearPreferences">Clear Preferences</button>
+            <p id="preferenceStatus"></p>
+        </section>
+
+        <section id="geolocationSection">
+            <h2>Find Nearby Events</h2>
+            <button id="findNearbyEvents">Find Nearby Events</button>
+            <p id="coordinates"></p>
+            <p id="geolocationError" style="color: red;"></p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Local City Council. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Task 5: Event Registration Form Submission
+        document.getElementById('eventRegistrationForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const eventType = document.getElementById('eventType').value;
+            const confirmationOutput = document.getElementById('registrationConfirmation');
+
+            confirmationOutput.style.display = 'block';
+            confirmationOutput.textContent = `Thank you, ${name}! You are registered for the ${eventType.replace(/_/g, ' ')} event. A confirmation email has been sent to ${email}.`;
+
+            this.reset(); // Clear the form
+        });
+
+        // Task 6: Event Feedback with Events Handling
+
+        // onblur for phone number validation
+        document.getElementById('phoneNumber').addEventListener('blur', function() {
+            const phoneNumber = this.value;
+            const phoneError = document.getElementById('phoneError');
+            const phonePattern = /^\d{3}-\d{3}-\d{4}$/; // Simple pattern for XXX-XXX-XXXX
+
+            if (phoneNumber === "") {
+                phoneError.textContent = "";
+            } else if (!phonePattern.test(phoneNumber)) {
+                phoneError.textContent = "Please enter a valid phone number (e.g., 123-456-7890).";
+            } else {
+                phoneError.textContent = "";
+            }
+        });
+
+        // onchange for event fee display
+        document.getElementById('feedbackEvent').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const eventFeeDisplay = document.getElementById('eventFeeDisplay');
+            const fee = selectedOption.getAttribute('data-fee');
+
+            if (fee !== null) {
+                eventFeeDisplay.textContent = `Event Fee: $${fee}`;
+            } else {
+                eventFeeDisplay.textContent = "";
+            }
+        });
+
+        // onclick for submit button confirmation
+        document.getElementById('feedbackSubmitBtn').addEventListener('click', function() {
+            const feedbackConfirmation = document.getElementById('feedbackConfirmation');
+            feedbackConfirmation.style.display = 'block';
+            feedbackConfirmation.textContent = 'Thank you for your feedback!';
+            setTimeout(() => {
+                feedbackConfirmation.style.display = 'none';
+            }, 3000); // Hide after 3 seconds
+            document.getElementById('feedbackForm').reset();
+            document.getElementById('characterCount').textContent = '0 characters';
+            document.getElementById('eventFeeDisplay').textContent = '';
+        });
+
+        // ondblclick to enlarge image
+        const enlargeImage = document.getElementById('enlargeImage');
+        const enlargeMessage = document.getElementById('enlargeMessage');
+        let originalSize = true;
+
+        enlargeImage.addEventListener('dblclick', function() {
+            if (originalSize) {
+                this.style.maxWidth = '400px'; // Enlarge size
+                this.style.border = '3px solid blue';
+                enlargeMessage.textContent = 'Image enlarged!';
+                enlargeMessage.style.display = 'block';
+                originalSize = false;
+            } else {
+                this.style.maxWidth = '200px'; // Restore original size
+                this.style.border = '1px solid #ccc';
+                enlargeMessage.style.display = 'none';
+                originalSize = true;
+            }
+        });
+
+        // Capture key events in feedback textarea and count characters
+        document.getElementById('feedbackTextarea').addEventListener('keyup', function() {
+            const charCount = this.value.length;
+            document.getElementById('characterCount').textContent = `${charCount} characters`;
+        });
+
+        // Task 7: Video Invite with Media Events
+
+        // oncanplay event for video
+        const eventPromoVideo = document.getElementById('eventPromoVideo');
+        const videoMessage = document.getElementById('videoMessage');
+
+        eventPromoVideo.addEventListener('canplay', function() {
+            videoMessage.textContent = "Video ready to play!";
+        });
+
+        // onbeforeunload to warn users (applied to the form for Task 5 or any form)
+        window.addEventListener('beforeunload', function(event) {
+            const nameField = document.getElementById('name');
+            const emailField = document.getElementById('email');
+
+            if (nameField && nameField.value !== '' || emailField && emailField.value !== '') {
+                const message = "You have unsaved changes. Are you sure you want to leave?";
+                event.returnValue = message; // Standard for browsers
+                return message; // For older browsers
+            }
+        });
+
+        // Task 8: Saving User Preferences
+
+        const preferredEventType = document.getElementById('preferredEventType');
+        const savePreferencesBtn = document.getElementById('savePreferences');
+        const clearPreferencesBtn = document.getElementById('clearPreferences');
+        const preferenceStatus = document.getElementById('preferenceStatus');
+
+        // Save selected event type in localStorage
+        savePreferencesBtn.addEventListener('click', function() {
+            const selectedValue = preferredEventType.value;
+            if (selectedValue) {
+                localStorage.setItem('preferredEvent', selectedValue);
+                preferenceStatus.textContent = `Preference saved: ${selectedValue.replace(/_/g, ' ')}`;
+            } else {
+                preferenceStatus.textContent = 'Please select a preference to save.';
+            }
+        });
+
+        // On reload, retrieve and pre-select it
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedPreference = localStorage.getItem('preferredEvent');
+            if (savedPreference) {
+                preferredEventType.value = savedPreference;
+                preferenceStatus.textContent = `Loaded preference: ${savedPreference.replace(/_/g, ' ')}`;
+            }
+        });
+
+        // Add a "Clear Preferences" button that clears both localStorage and sessionStorage
+        clearPreferencesBtn.addEventListener('click', function() {
+            localStorage.clear();
+            sessionStorage.clear();
+            preferredEventType.value = ''; // Reset dropdown
+            preferenceStatus.textContent = 'All preferences cleared.';
+        });
+
+        // Task 9: Geolocation for Event Mapping
+
+        const findNearbyEventsBtn = document.getElementById('findNearbyEvents');
+        const coordinatesDisplay = document.getElementById('coordinates');
+        const geolocationError = document.getElementById('geolocationError');
+
+        findNearbyEventsBtn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                const options = {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                };
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        coordinatesDisplay.textContent = `Latitude: ${lat}, Longitude: ${lon}`;
+                        geolocationError.textContent = ''; // Clear any previous errors
+                        console.log("Geolocation successful:", position); // Task 10: Console log
+                    },
+                    (error) => {
+                        let errorMessage = "Geolocation error: ";
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += "User denied the request for Geolocation.";
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += "Location information is unavailable.";
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage += "The request to get user location timed out.";
+                                break;
+                            case error.UNKNOWN_ERROR:
+                                errorMessage += "An unknown error occurred.";
+                                break;
+                        }
+                        geolocationError.textContent = errorMessage;
+                        coordinatesDisplay.textContent = '';
+                        console.error("Geolocation error:", error); // Task 10: Console error
+                    },
+                    options
+                );
+            } else {
+                geolocationError.textContent = "Geolocation is not supported by this browser.";
+            }
+        });
+
+    </script>
+</body>
+</html>
