@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Event Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        .event-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .loading-spinner {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3b82f6; /* Blue */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <p id="modalMessage" class="text-lg font-medium text-gray-800"></p>
+            <button id="modalOkBtn" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">OK</button>
+        </div>
+    </div>
+
+    <header class="bg-blue-600 text-white p-6 shadow-md rounded-b-lg">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <h1 class="text-3xl font-bold mb-4 md:mb-0">Community Event Portal</h1>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="#events-section" class="hover:text-blue-200">Events</a></li>
+                    <li><a href="#register-section" class="hover:text-blue-200">Register</a></li>
+                    <li><a href="#" class="hover:text-blue-200">About</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-6 flex-grow">
+
+        <section class="mb-8 bg-white p-6 rounded-lg shadow-sm">
+            <h2 class="text-2xl font-semibold mb-4">Find Events</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="categoryFilter" class="block text-sm font-medium text-gray-700 mb-1">Filter by Category:</label>
+                    <select id="categoryFilter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                        <option value="All">All Categories</option>
+                        <option value="Music">Music</option>
+                        <option value="Workshop">Workshop</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Community">Community</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="searchEvents" class="block text-sm font-medium text-gray-700 mb-1">Search by Name:</label>
+                    <input type="text" id="searchEvents" placeholder="Search event name..." class="mt-1 block w-full pl-3 pr-3 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                </div>
+            </div>
+        </section>
+
+        <section id="events-section" class="mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Upcoming Events</h2>
+            <div id="loadingSpinner" class="loading-spinner"></div>
+            <div id="eventList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                </div>
+            <p id="noEventsMessage" class="text-center text-gray-500 mt-8 hidden">No events found matching your criteria.</p>
+        </section>
+
+        <section id="register-section" class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Register for an Event</h2>
+            <form id="registrationForm" class="space-y-4">
+                <div>
+                    <label for="userName" class="block text-sm font-medium text-gray-700">Your Name:</label>
+                    <input type="text" id="userName" name="userName" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <p id="userNameError" class="text-red-500 text-sm mt-1 hidden">Please enter your name.</p>
+                </div>
+                <div>
+                    <label for="userEmail" class="block text-sm font-medium text-gray-700">Your Email:</label>
+                    <input type="email" id="userEmail" name="userEmail" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <p id="userEmailError" class="text-red-500 text-sm mt-1 hidden">Please enter a valid email.</p>
+                </div>
+                <div>
+                    <label for="eventSelect" class="block text-sm font-medium text-gray-700">Select Event:</label>
+                    <select id="eventSelect" name="eventSelect" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md shadow-sm">
+                        <option value="">-- Select an Event --</option>
+                        </select>
+                    <p id="eventSelectError" class="text-red-500 text-sm mt-1 hidden">Please select an event.</p>
+                </div>
+                <button type="submit" id="registerBtn" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-md">Register Now</button>
+                <div id="registrationMessage" class="mt-4 text-center text-sm font-medium"></div>
+            </form>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-800 text-white p-6 mt-12 text-center rounded-t-lg">
+        <p>&copy; 2025 Community Event Portal. All rights reserved.</p>
+        <p class="text-sm mt-2">Powered by JavaScript</p>
+    </footer>
+
+    <script>
+        // Topic 1: JavaScript Basics & Setup
+        // Using <script> in HTML (already done by placing this block)
+        console.log("Welcome to the Community Portal");
+
+        /**
+         * Custom modal function to replace alert().
+         * @param {string} message - The message to display.
+         * @param {function} [callback] - Optional callback function to execute when OK is clicked.
+         */
+        function customAlert(message, callback) {
+            const modal = document.getElementById('customModal');
+            const modalMessage = document.getElementById('modalMessage');
+            const closeButton = document.querySelector('.close-button');
+            const okButton = document.getElementById('modalOkBtn');
+
+            modalMessage.textContent = message;
+            modal.style.display = 'flex'; // Use flex to center
+
+            const closeHandler = () => {
+                modal.style.display = 'none';
+                closeButton.removeEventListener('click', closeHandler);
+                okButton.removeEventListener('click', okHandler);
+                if (callback) {
+                    callback();
+                }
+            };
+
+            const okHandler = () => {
+                modal.style.display = 'none';
+                closeButton.removeEventListener('click', closeHandler);
+                okButton.removeEventListener('click', okHandler);
+                if (callback) {
+                    callback();
+                }
+            };
+
+            closeButton.addEventListener('click', closeHandler);
+            okButton.addEventListener('click', okHandler);
+        }
+
+        // Topic 1: Alert when page is fully loaded (using customAlert)
+        window.onload = function() {
+            customAlert("Page is fully loaded! Welcome to the Community Portal.");
+        };
+
+        // --- Event Data and Management ---
+
+        // Topic 5: Objects and Prototypes - Define Event class
+        class Event {
+            /**
+             * Represents a community event.
+             * @param {string} id - Unique identifier for the event.
+             * @param {string} name - Name of the event.
+             * @param {string} date - Date of the event (e.g., "2025-07-15T10:00:00").
+             * @param {string} location - Location of the event.
+             * @param {string} category - Category of the event (e.g., "Music", "Workshop").
+             * @param {number} availableSeats - Number of available seats.
+             */
+            constructor(id, name, date, location, category, availableSeats) {
+                this.id = id;
+                // Topic 2: Syntax, Data Types, and Operators - const for name and date
+                const eventName = name;
+                const eventDate = new Date(date); // Convert date string to Date object for comparison
+                this.name = eventName;
+                this.date = eventDate;
+                this.location = location;
+                this.category = category;
+                // Topic 2: Syntax, Data Types, and Operators - let for seats
+                let seats = availableSeats;
+                this.availableSeats = seats;
+            }
+
+            // Topic 5: Add checkAvailability() to prototype (class method)
+            checkAvailability() {
+                return this.availableSeats > 0;
+            }
+
+            /**
+             * Decrements available seats.
+             * Topic 2: Use -- to manage seat count
+             */
+            decrementSeats() {
+                if (this.availableSeats > 0) {
+                    this.availableSeats--;
+                    return true;
+                }
+                return false;
+            }
+
+            /**
+             * Increments available seats (e.g., on cancellation).
+             * Topic 2: Use ++ to manage seat count
+             */
+            incrementSeats() {
+                this.availableSeats++;
+            }
+        }
+
+        // Mock event data (simulating a backend API)
+        const mockEventsData = [
+            new Event('e001', 'Summer Music Festival', '2025-08-10T18:00:00', 'Central Park', 'Music', 150),
+            new Event('e002', 'Beginner Photography Workshop', '2025-07-20T09:30:00', 'Community Hall', 'Workshop', 25),
+            new Event('e003', 'Local Charity Run', '2025-09-05T08:00:00', 'Riverside Trail', 'Sports', 300),
+            new Event('e004', 'Community Garden Day', '2025-07-01T14:00:00', 'Community Garden', 'Community', 0), // Full event
+            new Event('e005', 'Jazz Night Live', '2025-08-22T19:00:00', 'The Blue Note', 'Music', 80),
+            new Event('e006', 'Past Event (Hidden)', '2024-06-15T10:00:00', 'Old Town Square', 'Community', 50), // Past event
+            new Event('e007', 'Advanced Coding Bootcamp', '2025-09-10T09:00:00', 'Tech Hub', 'Workshop', 10),
+            new Event('e008', 'Local Artisans Market', '2025-07-28T11:00:00', 'Town Square', 'Community', 200)
+        ];
+
+        // Topic 6: Arrays and Methods - Initial array of events
+        let events = []; // This will be populated by fetchEvents()
+
+        // Topic 4: Functions - addEvent()
+        /**
+         * Adds a new event to the global events array.
+         * @param {Event} newEvent - The Event object to add.
+         */
+        function addEvent(newEvent) {
+            events.push(newEvent); // Topic 6: Add new events using .push()
+            console.log(`Event '${newEvent.name}' added.`);
+        }
+
+        // Topic 4: Functions, Scope, Closures - Closure to track total registrations for a category
+        function createRegistrationTracker() {
+            const registrations = {}; // Private variable within the closure
+
+            return {
+                /**
+                 * Increments the registration count for a given category.
+                 * @param {string} category - The category of the event.
+                 */
+                incrementRegistration: function(category) {
+                    registrations[category] = (registrations[category] || 0) + 1;
+                    console.log(`Total registrations for ${category}: ${registrations[category]}`);
+                },
+                /**
+                 * Gets the current registration count for a given category.
+                 * @param {string} category - The category of the event.
+                 * @returns {number} The total registrations for that category.
+                 */
+                getRegistrations: function(category) {
+                    return registrations[category] || 0;
+                }
+            };
+        }
+        const registrationTracker = createRegistrationTracker(); // Instantiate the tracker
+
+        // Topic 4: Functions - registerUser()
+        /**
+         * Registers a user for a specific event.
+         * Topic 3: Wrap registration logic in try-catch to handle errors
+         * @param {string} eventId - The ID of the event to register for.
+         * @param {string} userName - The name of the registering user.
+         * @param {string} userEmail - The email of the registering user.
+         * @returns {boolean} - True if registration was successful, false otherwise.
+         */
+        function registerUser(eventId, userName, userEmail) {
+            try {
+                const event = events.find(e => e.id === eventId); // Find the event
+                if (!event) {
+                    throw new Error("Event not found.");
+                }
+
+                // Topic 3: Conditionals - Use if-else to hide past or full events
+                if (!event.checkAvailability()) {
+                    throw new Error(`Registration failed: '${event.name}' is full.`);
+                }
+                if (event.date < new Date()) { // Check if event is in the past
+                    throw new Error(`Registration failed: '${event.name}' is a past event.`);
+                }
+
+                if (event.decrementSeats()) { // Decrement seats using Event class method
+                    registrationTracker.incrementRegistration(event.category); // Use closure
+                    console.log(`User ${userName} (${userEmail}) registered for '${event.name}'. Remaining seats: ${event.availableSeats}`);
+                    return true;
+                } else {
+                    throw new Error(`Registration failed: No seats available for '${event.name}'.`);
+                }
+            } catch (error) {
+                console.error("Registration Error:", error.message);
+                customAlert(`Registration failed: ${error.message}`);
+                return false;
+            }
+        }
+
+        // Topic 4: Higher-Order Functions - filterEventsByCategory()
+        /**
+         * Filters events by category and applies a callback.
+         * Topic 10: Modern JavaScript Features - Default parameters
+         * @param {string} category - The category to filter by. Defaults to 'All'.
+         * @param {function} [callback] - An optional callback function to process the filtered events.
+         * @returns {Array<Event>} - The filtered list of events.
+         */
+        function filterEventsByCategory(category = 'All', callback) {
+            // Topic 10: Modern JavaScript Features - Spread operator to clone event list before filtering
+            let filtered = [...events];
+
+            if (category !== 'All') {
+                // Topic 6: Arrays and Methods - Use .filter() to show only music events (or any category)
+                filtered = filtered.filter(event => event.category === category);
+            }
+
+            // Topic 3: Conditionals - Only show upcoming events with seats
+            filtered = filtered.filter(event => event.date >= new Date() && event.checkAvailability());
+
+            if (callback && typeof callback === 'function') {
+                callback(filtered); // Pass filtered events to callback
+            }
+            return filtered;
+        }
+
+        // --- DOM Manipulation and Rendering ---
+
+        // Topic 7: DOM Manipulation - Access DOM elements
+        const eventListContainer = document.getElementById('eventList');
+        const eventSelectDropdown = document.getElementById('eventSelect');
+        const registrationForm = document.getElementById('registrationForm');
+        const categoryFilterDropdown = document.getElementById('categoryFilter');
+        const searchInput = document.getElementById('searchEvents');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const noEventsMessage = document.getElementById('noEventsMessage');
+
+        /**
+         * Renders a single event card to the DOM.
+         * @param {Event} event - The event object to render.
+         */
+        function renderEventCard(event) {
+            // Topic 7: Create and append event cards using createElement()
+            const eventCard = document.createElement('div');
+            eventCard.className = 'event-card bg-white rounded-lg shadow-md p-6 flex flex-col justify-between'; // Tailwind classes
+
+            // Topic 10: Modern JavaScript Features - Destructuring to extract event details
+            const { id, name, date, location, category, availableSeats } = event;
+
+            // Format date for display
+            const formattedDate = date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // Topic 2: Concatenate event info using template literals
+            eventCard.innerHTML = `
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">${name}</h3>
+                    <p class="text-gray-600 mb-1"><strong class="font-medium">Date:</strong> ${formattedDate}</p>
+                    <p class="text-gray-600 mb-1"><strong class="font-medium">Location:</strong> ${location}</p>
+                    <p class="text-gray-600 mb-2"><strong class="font-medium">Category:</strong> <span class="inline-block bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${category}</span></p>
+                    <p id="seats-${id}" class="text-sm font-medium ${availableSeats > 0 ? 'text-green-600' : 'text-red-600'}">
+                        Seats Available: ${availableSeats > 0 ? availableSeats : 'Full'}
+                    </p>
+                </div>
+                <button data-event-id="${id}" class="register-btn mt-4 w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 shadow-md
+                    ${availableSeats === 0 ? 'opacity-50 cursor-not-allowed' : ''}"
+                    ${availableSeats === 0 ? 'disabled' : ''}>
+                    Register
+                </button>
+            `;
+            eventListContainer.appendChild(eventCard);
+
+            // Topic 5: List object keys and values using Object.entries() (for debugging/inspection)
+            // console.log(`Details for event '${name}':`);
+            // for (const [key, value] of Object.entries(event)) {
+            //     console.log(`  ${key}: ${value}`);
+            // }
+        }
+
+        /**
+         * Renders all events to the DOM based on the current `events` array.
+         * @param {Array<Event>} eventsToDisplay - The array of events to render.
+         */
+        function renderEvents(eventsToDisplay) {
+            eventListContainer.innerHTML = ''; // Clear previous events
+            eventSelectDropdown.innerHTML = '<option value="">-- Select an Event --</option>'; // Clear form options
+
+            if (eventsToDisplay.length === 0) {
+                noEventsMessage.classList.remove('hidden');
+            } else {
+                noEventsMessage.classList.add('hidden');
+                // Topic 3: Loop through the event list and display using forEach()
+                eventsToDisplay.forEach(event => {
+                    renderEventCard(event); // Render card
+                    // Add event to registration form dropdown if available
+                    if (event.checkAvailability() && event.date >= new Date()) {
+                        const option = document.createElement('option');
+                        option.value = event.id;
+                        // Topic 6: Use .map() to format display cards (here, for dropdown options)
+                        option.textContent = `${event.name} (${event.category}) - ${event.availableSeats} seats`;
+                        eventSelectDropdown.appendChild(option);
+                    }
+                });
+            }
+
+            // Topic 14: jQuery and JS Frameworks - Use .fadeIn() for event cards
+            $('.event-card').hide().fadeIn(500); // Fade in new cards
+        }
+
+        /**
+         * Updates the UI for a specific event after registration/cancellation.
+         * @param {string} eventId - The ID of the event to update.
+         */
+        function updateEventUI(eventId) {
+            const event = events.find(e => e.id === eventId);
+            if (event) {
+                // Topic 7: Update UI when user registers or cancels
+                const seatsElement = document.getElementById(`seats-${eventId}`);
+                const registerButton = document.querySelector(`.register-btn[data-event-id="${eventId}"]`);
+
+                if (seatsElement) {
+                    seatsElement.textContent = `Seats Available: ${event.availableSeats > 0 ? event.availableSeats : 'Full'}`;
+                    seatsElement.className = `text-sm font-medium ${event.availableSeats > 0 ? 'text-green-600' : 'text-red-600'}`;
+                }
+                if (registerButton) {
+                    if (event.availableSeats === 0) {
+                        $(registerButton).fadeOut(300, function() { // Topic 14: jQuery .fadeOut()
+                            $(this).text('Full').prop('disabled', true).addClass('opacity-50 cursor-not-allowed').fadeIn(300); // Fade in with new text
+                        });
+                    } else {
+                        $(registerButton).text('Register').prop('disabled', false).removeClass('opacity-50 cursor-not-allowed').fadeIn(300);
+                    }
+                }
+
+                // Re-render the event select dropdown as well
+                renderEvents(filterEventsByCategory(categoryFilterDropdown.value));
+            }
+        }
+
+        // --- Event Handlers ---
+
+        // Topic 8: Event Handling - Use onclick for "Register" buttons (delegated)
+        eventListContainer.addEventListener('click', function(event) {
+            const registerButton = event.target.closest('.register-btn');
+            if (registerButton) {
+                // Topic 14: jQuery - Use $('#registerBtn').click(...)
+                // This is a delegated event, so we use plain JS for the listener,
+                // but jQuery could be used if attaching directly to each button.
+                // Example jQuery equivalent for direct attachment:
+                // $('.register-btn').on('click', function() { ... });
+                const eventId = registerButton.dataset.eventId;
+                // For simplicity in this demo, we'll just show a message.
+                // Actual registration would happen via the form.
+                customAlert(`You clicked 'Register' for event ID: ${eventId}. Please use the form below to complete registration.`);
+            }
+        });
+
+        // Topic 8: Event Handling - Use onchange to filter events by category
+        categoryFilterDropdown.addEventListener('change', function() {
+            const selectedCategory = this.value;
+            const searchTerm = searchInput.value.toLowerCase();
+            let currentFilteredEvents = filterEventsByCategory(selectedCategory);
+
+            if (searchTerm) {
+                currentFilteredEvents = currentFilteredEvents.filter(event =>
+                    event.name.toLowerCase().includes(searchTerm)
+                );
+            }
+            renderEvents(currentFilteredEvents);
+        });
+
+        // Topic 8: Event Handling - Use keydown to allow quick search by name
+        searchInput.addEventListener('keydown', function(event) {
+            // Only filter on Enter key press or after a short delay for better UX
+            if (event.key === 'Enter' || this.value.length >= 3 || this.value.length === 0) {
+                const searchTerm = this.value.toLowerCase();
+                const selectedCategory = categoryFilterDropdown.value;
+                let currentFilteredEvents = filterEventsByCategory(selectedCategory);
+
+                if (searchTerm) {
+                    currentFilteredEvents = currentFilteredEvents.filter(event =>
+                        event.name.toLowerCase().includes(searchTerm)
+                    );
+                }
+                renderEvents(currentFilteredEvents);
+            }
+        });
+
+
+        // Topic 11: Working with Forms - Prevent default form behavior
+        registrationForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            // Topic 11: Capture name, email, and selected event using form.elements
+            const userNameInput = this.elements.userName;
+            const userEmailInput = this.elements.userEmail;
+            const eventSelectInput = this.elements.eventSelect;
+
+            const userName = userNameInput.value.trim();
+            const userEmail = userEmailInput.value.trim();
+            const selectedEventId = eventSelectInput.value;
+
+            // Topic 11: Validate inputs and show errors inline
+            let isValid = true;
+            document.querySelectorAll('.text-red-500').forEach(el => el.classList.add('hidden')); // Hide all errors initially
+
+            if (!userName) {
+                document.getElementById('userNameError').classList.remove('hidden');
+                isValid = false;
+            }
+            if (!userEmail || !userEmail.includes('@') || !userEmail.includes('.')) {
+                document.getElementById('userEmailError').classList.remove('hidden');
+                isValid = false;
+            }
+            if (!selectedEventId) {
+                document.getElementById('eventSelectError').classList.remove('hidden');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                document.getElementById('registrationMessage').textContent = 'Please correct the errors above.';
+                document.getElementById('registrationMessage').className = 'mt-4 text-center text-sm font-medium text-red-600';
+                return;
+            }
+
+            // Topic 12: AJAX & Fetch API - Use fetch() to POST user data to a mock API
+            const registrationData = {
+                userName: userName,
+                userEmail: userEmail,
+                eventId: selectedEventId
+            };
+
+            // Topic 13: Debugging and Testing - Log form submission steps and check fetch request payload
+            console.log("Attempting to register with data:", registrationData);
+            document.getElementById('registrationMessage').textContent = 'Registering...';
+            document.getElementById('registrationMessage').className = 'mt-4 text-center text-sm font-medium text-blue-600';
+            loadingSpinner.style.display = 'block'; // Show loading spinner
+
+            try {
+                // Simulate network delay with setTimeout
+                await new Promise(resolve => setTimeout(resolve, 1500)); // Topic 12: Use setTimeout() to simulate a delayed response
+
+                // Simulate API call
+                const mockResponse = await fetch('/mock-register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(registrationData),
+                });
+
+                // Simulate a successful registration or a failure
+                const success = registerUser(selectedEventId, userName, userEmail); // Call the core registration logic
+
+                if (success) {
+                    document.getElementById('registrationMessage').textContent = 'Registration successful!';
+                    document.getElementById('registrationMessage').className = 'mt-4 text-center text-sm font-medium text-green-600';
+                    registrationForm.reset(); // Clear the form
+                    updateEventUI(selectedEventId); // Update UI for the registered event
+                } else {
+                    // Error message already handled by registerUser's try-catch and customAlert
+                    document.getElementById('registrationMessage').textContent = 'Registration failed. Please try again.';
+                    document.getElementById('registrationMessage').className = 'mt-4 text-center text-sm font-medium text-red-600';
+                }
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                document.getElementById('registrationMessage').textContent = 'Network error or server issue. Please try again.';
+                document.getElementById('registrationMessage').className = 'mt-4 text-center text-sm font-medium text-red-600';
+            } finally {
+                loadingSpinner.style.display = 'none'; // Hide loading spinner
+                // Topic 13: Use Chrome Dev Tools Console and Network tab to inspect this fetch request.
+                // Look for the POST request to /mock-register in the Network tab.
+            }
+        });
+
+
+        // --- Async JS and Initial Data Fetch ---
+
+        // Topic 9: Async JS, Promises, Async/Await - Fetch events from a mock JSON endpoint
+        async function fetchEvents() {
+            loadingSpinner.style.display = 'block'; // Show loading spinner
+            eventListContainer.innerHTML = ''; // Clear existing content
+            noEventsMessage.classList.add('hidden'); // Hide no events message initially
+
+            try {
+                // Simulate API call with a delay
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network latency
+
+                // Topic 9: Use .then() and .catch() to handle results (demonstrated with async/await)
+                // In async/await, .then() and .catch() are implicitly handled by await and try-catch.
+                // For explicit .then/.catch demonstration:
+                /*
+                return new Promise(resolve => setTimeout(() => resolve(mockEventsData), 1000))
+                    .then(data => {
+                        events = data;
+                        renderEvents(filterEventsByCategory('All'));
+                        loadingSpinner.style.display = 'none';
+                    })
+                    .catch(error => {
+                        console.error("Error fetching events (Promise.then/.catch):", error);
+                        customAlert("Failed to load events. Please try again later.");
+                        loadingSpinner.style.display = 'none';
+                    });
+                */
+
+                // Topic 9: Rewrite using async/await and show loading spinner
+                // In a real app, you'd fetch from a URL: const response = await fetch('/api/events');
+                // const data = await response.json();
+                const data = mockEventsData; // Using mock data directly for this example
+                events = data; // Populate global events array
+                renderEvents(filterEventsByCategory('All')); // Render initial events (filtered to show only valid ones)
+
+            } catch (error) {
+                console.error("Error fetching events (Async/Await):", error);
+                customAlert("Failed to load events. Please try again later.");
+            } finally {
+                loadingSpinner.style.display = 'none'; // Hide loading spinner
+            }
+        }
+
+        // Initial fetch of events when the script loads
+        fetchEvents();
+
+        // Topic 14: jQuery and JS Frameworks - Mention one benefit of moving to frameworks like React or Vue
+        /*
+        Benefit of frameworks like React or Vue:
+        They provide a component-based architecture, making it easier to manage complex UI states,
+        reuse UI elements, and build scalable applications with predictable data flow.
+        They also offer efficient DOM updates (virtual DOM) and often come with robust
+        ecosystems for state management, routing, and testing, simplifying development
+        for large-scale interactive applications compared to vanilla JavaScript or jQuery for complex UIs.
+        */
+
+        // Topic 13: Debugging and Testing Notes:
+        /*
+        To debug this application:
+        1. Open Chrome DevTools (Right-click -> Inspect, or F12).
+        2. Console Tab: Check for "Welcome to the Community Portal", "Registration Error", "Fetch Error", and other console logs.
+        3. Network Tab:
+           - When the page loads, observe if there are any mock API calls (though in this example, mockEventsData is used directly).
+           - When you submit the registration form, you will see a simulated POST request to `/mock-register`. You can inspect its payload (Request Payload) and the simulated response.
+        4. Sources Tab:
+           - Find this JavaScript file (usually listed as `index.html` or a similar name if embedded).
+           - Add breakpoints by clicking on line numbers (e.g., inside `registerUser`, `fetchEvents`, or the form submit handler).
+           - Refresh the page or trigger an action to hit the breakpoint.
+           - Use the "Scope" panel to inspect variables at that point in execution.
+           - Use "Step over next function call" (F10), "Step into" (F11), "Step out" (Shift+F11), and "Resume script execution" (F8) to navigate through the code.
+        */
+
+    </script>
+</body>
+</html>
