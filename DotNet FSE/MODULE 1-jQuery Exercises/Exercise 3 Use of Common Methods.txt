@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Methods</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .box { width: 100px; height: 100px; background: skyblue; margin: 10px; display: inline-block; }
+  </style>
+</head>
+<body>
+  <div class="box"></div>
+  <div class="box"></div>
+  <div class="box"></div>
+
+  <button onclick="$('.box').hide()">Hide</button>
+  <button onclick="$('.box').show()">Show</button>
+  <button onclick="$('.box').fadeOut()">Fade Out</button>
+  <button onclick="$('.box').fadeIn()">Fade In</button>
+  <button onclick="$('.box').toggle()">Toggle</button>
+  <button onclick="$('.box').slideUp().delay(1000).slideDown()">Chain</button>
+</body>
+</html>

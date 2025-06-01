@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Selector</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <h1>Original Heading</h1>
+  <p>First paragraph</p>
+  <p>Second paragraph</p>
+  <button>Click Me</button>
+
+  <script>
+    $(document).ready(function() {
+      $("h1").text("Updated Heading");
+      $("button").click(function() {
+        $("p:first").hide();
+      });
+    });
+  </script>
+</body>
+</html>

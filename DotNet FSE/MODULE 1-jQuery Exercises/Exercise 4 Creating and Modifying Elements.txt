@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Form</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <input type="text" id="itemInput" />
+  <button id="addBtn">Add</button>
+  <button id="clearBtn">Remove All</button>
+  <ul id="itemList"></ul>
+
+  <script>
+    $(document).ready(function() {
+      $("#addBtn").click(function() {
+        let value = $("#itemInput").val();
+        if (value) {
+          $("#itemList").append("<li>" + value + "</li>");
+          $("#itemInput").val("");
+        }
+      });
+
+      $("#clearBtn").click(function() {
+        $("#itemList").empty();
+      });
+    });
+  </script>
+</body>
+</html>
