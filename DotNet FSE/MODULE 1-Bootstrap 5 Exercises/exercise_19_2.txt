@@ -1,0 +1,4 @@
+// _variables.scss
+$primary: #ff5733;
+$border-radius: 1rem;
+// Recompile Bootstrap after changes
